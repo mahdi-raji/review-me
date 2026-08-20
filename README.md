@@ -1,50 +1,91 @@
 # Review Me
 
-A small .NET CLI tool for preparing Git diffs to review with AI tools such as ChatGPT.
+A small .NET CLI tool for preparing Git diffs for AI-assisted code review.
 
-It collects changed lines from your Git repository, removes potentially sensitive content, formats the result as a Markdown diff, and copies it to your clipboard.
+Review Me collects changes from your Git repository, removes potentially sensitive content, formats the result as a Markdown diff, and copies it directly to your clipboard.
 
 ## Features
 
-* Get uncommitted Git changes
-* Compare the current branch with another branch
-* Hide lines containing sensitive words
-* Generate AI-friendly Markdown diff output
-* Automatically copy the result to clipboard
-* Simple local configuration
+- Get uncommitted Git changes
+- Compare the current branch with another branch
+- Hide lines containing sensitive words
+- Ignore configured files
+- Generate AI-friendly Markdown diff output
+- Automatically copy the generated diff to clipboard
+- Simple local configuration
+- Standalone builds for Windows and Linux
+
+## Download
+
+Pre-built standalone executables are available in the **Releases** section.
+
+Available builds:
+
+- Windows x64
+- Linux x64
+
+The standalone builds include the required .NET runtime, so you do not need to install .NET separately.
 
 ## Requirements
 
-* .NET 10
-* Git repository
+- Git
+- A Git repository
 
 ## Usage
 
-Run the application from inside a Git repository.
+Run Review Me from inside a Git repository.
 
-### Uncommitted changes
+### Windows
+
+Get uncommitted changes:
 
 ```bash
-dotnet run --project ReviewMe -- changes
+ReviewMe.exe
 ```
 
-`changes` is also the default command:
+or:
 
 ```bash
-dotnet run --project ReviewMe
+ReviewMe.exe changes
 ```
 
-### Compare with a branch
+Compare the current branch with another branch:
 
 ```bash
-dotnet run --project ReviewMe -- branch dev
+ReviewMe.exe branch dev
+```
+
+### Linux
+
+Make the downloaded file executable:
+
+```bash
+chmod +x ReviewMe
+```
+
+Get uncommitted changes:
+
+```bash
+./ReviewMe
+```
+
+or:
+
+```bash
+./ReviewMe changes
+```
+
+Compare the current branch with another branch:
+
+```bash
+./ReviewMe branch dev
 ```
 
 If no branch name is provided, `dev` is used by default.
 
 ## Configuration
 
-On the first run, Review Me creates a `config.json` file under the application's user data directory.
+On the first run, Review Me creates a local `config.json` file.
 
 Example:
 
@@ -59,13 +100,19 @@ Example:
 }
 ```
 
-Lines containing configured sensitive words are replaced with:
+### Sensitive Words
+
+Any changed line containing one of the configured `NotSafeWords` is replaced with:
 
 ```text
 [REMOVED]
 ```
 
-before the diff is copied to the clipboard.
+This helps prevent accidentally sending sensitive values when sharing the generated diff with an AI assistant.
+
+### Ignored Files
+
+Files added to `IgnoredFiles` are excluded from the generated diff.
 
 ## Output
 
@@ -78,7 +125,25 @@ The generated output looks like this:
 + [REMOVED]
 ```
 
-You can paste the generated diff directly into your preferred AI assistant for code review.
+The result is printed to the console and automatically copied to your clipboard.
+
+You can then paste it directly into ChatGPT or any other AI assistant for code review.
+
+## Build From Source
+
+If you want to build the project yourself, .NET 10 SDK is required.
+
+Windows x64:
+
+```bash
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -o publish/windows
+```
+
+Linux x64:
+
+```bash
+dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -o publish/linux
+```
 
 ## Status
 
